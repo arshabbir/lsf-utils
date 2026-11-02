@@ -1,0 +1,65 @@
+# bench.conf - settings for lsf-build-bench
+# Copy this file to bench.conf and edit it. Every setting can also be given on the command line,
+# which wins over the file, for example:   QUEUE=short ./bench.sh check
+
+# ---- the LSF side --------------------------------------------------------------------------
+# LSF host names to build on (lshosts -w lists them). Empty = every host that is "ok" in bhosts.
+HOSTS=""
+# Queue for the LSF builds: any queue you may submit jobs to (bqueues lists them). An LSF
+# administrator can add a queue with at most one job slot per core: ./setup.sh queue
+QUEUE="normal"
+# How lsmake gets its hosts in test 2:
+#   auto   = batch if no host can run more job slots than it has cores, otherwise direct
+#   batch  = bsub -K -n <cores> -m "<hosts>" lsmake    (LSF schedules and accounts the build)
+#   direct = lsmake -m "host cores host cores ..."      (the exact cores of each host)
+LSMAKE_MODE="auto"
+
+# ---- shared folder ---------------------------------------------------------------------------
+# A folder that every host sees at the same path (an NFS home folder is fine). The results, the
+# sample project and the check files go here.
+WORKDIR="$HOME/lsf-build-bench-work"
+
+# ---- what to build ---------------------------------------------------------------------------
+# Your C/C++ source tree, on the shared folder. Empty = a generated sample C++ project.
+REPO=""
+# Run once in REPO before the timed builds, e.g. CMake or ./configure. Empty = nothing to run.
+CONFIGURE=""
+# Folder, relative to REPO, where make runs.
+BUILD_DIR="."
+# Arguments or targets for make (and lsmake), e.g. "all". Empty = the default target.
+MAKE_ARGS=""
+# Run in BUILD_DIR before every timed build, so each build starts clean.
+CLEAN="make clean"
+
+# Examples - uncomment one block and set REPO:
+#
+#   A plain Makefile:
+#     REPO="$HOME/src/myproject"
+#
+#   CMake (out-of-source build in REPO/build; use the "Unix Makefiles" generator):
+#     REPO="$HOME/src/myproject"
+#     CONFIGURE='cmake -S . -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release'
+#     BUILD_DIR="build"
+#
+#   autotools:
+#     REPO="$HOME/src/myproject"
+#     CONFIGURE="./configure"
+
+# ---- the "one server" side -------------------------------------------------------------------
+# The host the baseline builds run on. Empty = the host you run bench.sh on (no ssh needed).
+# Run bench.sh on one of the HOSTS so that both sides use the same kind of server.
+BASELINE_HOST=""
+
+# ---- the tests ---------------------------------------------------------------------------------
+# 1 = N clean builds at the same time (one server, then bsub); 2 = one large build (make, then lsmake)
+TESTS="1 2"
+# Test 1: number of builds (empty = all cores of HOSTS / SLOTS) and cores per build.
+N=""
+SLOTS=2
+# Test 1 copies the project to this local folder on each host for every build.
+SCRATCH="/tmp"
+# Seconds to wait between the timed runs.
+COOL=15
+# Commands that must be the same on every host (checked by ./bench.sh check).
+# Empty = "gcc g++ make", plus cmake when CONFIGURE uses it.
+TOOLS=""

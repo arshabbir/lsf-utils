@@ -1,0 +1,17 @@
+# The limit that "./setup.sh queue" adds to lsb.resources (shown here for reference; one row per
+# host of bench.conf, with the host name LSF uses and the cores lshosts reports).
+# Vertical tabular Limit section, IBM Spectrum LSF 10.1.0 printed pp. 1695-1696; NAME at most 40
+# characters (p. 1701). Queue build may use at most SLOTS job slots on that host. PJOB_LIMIT and
+# SLOTS_PER_PROCESSOR are not used: with PARALLEL_SCHED_BY_SLOT=Y (set by the installer) LSF counts
+# each job slot as a processor, so they scale with MXJ instead of the cores.
+# Author: P M Shabbir Hussain
+
+# >>> lsf-build-bench limit build (added by setup.sh; remove with: setup.sh remove)
+# queue build: at most one job slot per core on each server (cores = lshosts ncpus)
+Begin Limit
+NAME                                     QUEUES       HOSTS                                SLOTS
+bf_build_1_hostA                         build        hostA                                16
+bf_build_2_hostB                         build        hostB                                2
+bf_build_3_hostC                         build        hostC                                16
+End Limit
+# <<< lsf-build-bench limit build

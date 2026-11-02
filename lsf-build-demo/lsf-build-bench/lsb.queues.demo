@@ -1,0 +1,15 @@
+# The queue that "./setup.sh queue" adds to lsb.queues (shown here for reference; HOSTS are the
+# hosts of bench.conf). RES_REQ sends each build to the least-loaded host first. FAIRSHARE gives
+# every user an equal share. The limit of one job slot per core is in lsb.resources (lsb.resources.demo).
+# Author: P M Shabbir Hussain
+
+# >>> lsf-build-bench queue build (added by setup.sh; remove with: setup.sh remove)
+Begin Queue
+QUEUE_NAME   = build
+PRIORITY     = 30
+HOSTS        = hostA hostB hostC
+RES_REQ      = order[r15s:ut]
+FAIRSHARE    = USER_SHARES[[default,1]]
+DESCRIPTION  = lsf-build-bench: C/C++ builds, least-loaded server first, at most one job slot per core (see blimits -a -w)
+End Queue
+# <<< lsf-build-bench queue build
